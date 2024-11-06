@@ -1,249 +1,142 @@
 #include <iostream>
 #include <vector>
-#include <EasyAssert.h>
-#include <cassert>
+#include <cctype>
+#include "nsUtil.h"
 
 using namespace std;
+using namespace nsUtil;
 
-void genererTab (vector<int> & tab,
-                const size_t &taille,
-                const int & min,
-                const int & max){
-    tab.resize(taille);
-    for (int & val : tab)
-        val = min + rand ()%(max-min);
+
+string & ToLower (string & Str){
+    for (size_t i (0); i<Str.size(); ++i)
+        Str[i] = tolower(Str[i]);
+    return Str;
 }
 
-void afficherTab (const vector<int> & tab){
-    for (const int & val : tab)
-        cout << val << ' ';
-    cout << endl;
+vector<string> & ToLower(vector<string> & VString){
+    for (size_t i (0); i<VString.size(); ++i)
+        VString[i] = ToLower(VString[i]);
+    return VString;
 }
 
-int supprimerElem (vector<int> & tab, const size_t & pos){
-    int val = tab[pos];
-    for (unsigned i(pos); i < tab.size(); i++)
-        tab[i] = tab[i+1];
-    tab.resize(tab.size()-1);
-    return val;
+string & ToUpper (string & Str){
+    for (size_t i (0); i<Str.size(); ++i)
+        Str[i] = toupper(Str[i]);
+    return Str;
 }
 
-void insererElem (vector<int> & tab, const size_t & pos,
-                 const int & val){
-    tab.resize(tab.size()+1);
-    for (unsigned i(tab.size()-1); i>=pos+1; i--){
-        tab[i] = tab[i-1];
+vector <string> & ToUpper (vector <string> & VString){
+    for (size_t i (0); i<VString.size(); ++i)
+        VString[i] = ToUpper(VString[i]);
+    return VString;
+}
 
+
+vector <string> & Swap (vector <string> & VString, const unsigned & PosBeg, const unsigned & PosEnd){
+    string temp = VString[PosBeg];
+    VString[PosBeg]=VString[PosEnd];
+    VString[PosEnd]=temp;
+    return VString;
+}
+
+
+vector <string> & Delete (vector <string> & VString, const unsigned & PosBeg){
+    for (unsigned i(PosBeg); i < VString.size(); ++i)
+        VString[i] = VString[i+1];
+
+    VString.resize(VString.size()-1);
+    return VString;
+}
+
+
+vector <string> & Insert (vector <string> & VString, const unsigned & PosBeg, const string & Line){
+    VString.resize(VString.size()+1);
+    for (unsigned i(VString.size()-1); i >=PosBeg+1; i--){
+        VString[i] = VString[i-1];
     }
-    tab[pos]=val;
+    VString[PosBeg]=Line;
+    return VString;
 }
 
-void deplacerElem (vector<int> & tab,
-                  const size_t & posInit,
-                  const size_t & posFin){
-    int nbr = supprimerElem(tab,posInit);
-    insererElem(tab,posFin,nbr);
+vector <string>& Move (vector <string> & VString, const unsigned & PosBeg, const unsigned & PosEnd){
+    string chaine = VString[PosBeg];
+    VString.erase(VString.begin()+PosBeg);
+    VString.insert(VString.begin()+PosEnd, chaine);
+    return VString;
 }
 
-void monDeplacerElem (vector<int> & tab,
-                     const size_t & posInit,
-                     const size_t & posFin){
-    int val = tab[posInit];
-    tab.erase(tab.begin()+posInit);
-    tab.insert(tab.begin()+posFin, val);
-}
 
-void protocoleSupprimerAvecEasyAssert (const size_t & tailleTab,
-                                      const unsigned & nbTab){
-    if (tailleTab > 26 || nbTab > 2){
-        cerr << "paramètres trops grands pour EASY_ASSERT" << endl;
-        return;
+string & TrimLeft (string & Str){
+    size_t i (0);
+    while (isspace(Str[i])){
+        ++i;
     }
-    //pour chaque tableau
-    for (unsigned i (0); i < nbTab; ++i){
-        //on le génère
-        vector<int> tabInitial;
-        genererTab(tabInitial, tailleTab, 0, tabInitial.size() + 10);
-        //pour chaque indice du tableau
-        for (size_t j (0); j < tabInitial.size(); ++j){
-            //on crée 2 copies du tableau originel
-            vector<int> tabCourant1 (tabInitial), tabCourant2 (tabInitial);
-            //on l'appele avec la première copie pour supprimer la case courante
-            supprimerElem(tabCourant1, j);
-            //on fait appel à la même fonction du C++ avec la seconde copie
-            tabCourant2.erase(tabCourant2.begin()+j);
-            //on compare les resultats
-            EASY_ASSERT (tabCourant1 == tabCourant2);
+    cout << i << endl;;
+    return i;
+}
+
+void AfficherTab (vector<string> VString){
+    for (size_t i (0); i<VString.size(); ++i)
+        cout << VString[i] << endl;
+}
+
+
+//argc nombre argument dans le terminal,  argv liste des arguments
+int main(int argc, char *argv[])
+{
+    // for (int i (0); i < argc; ++i)
+    //     cout << argv[i] << endl;
+    // if (4 != argc){
+    //     cout << argc;
+    //     cerr << "utilisation : "
+    //          << argv[0]
+    //          << " + nom d'un fichier "
+    //          << endl;
+    //     exit(1);
+    // }
+    string cheminVersFichier = string(argv[1]);
+    vector<string> vFichier = FileToVectString(cheminVersFichier);
+    //vFichier[2] = ToLower(vFichier[2]);
+
+    if (string(argv[2])=="min"){
+        if (string (argv[3])=="tout"){
+            vFichier=ToLower(vFichier);
+        }
+        else {
+            size_t numLigne = stoull (argv[3]);
+            vFichier[numLigne]=ToLower(vFichier[numLigne]);
         }
     }
-}
 
-void protocoleInsererAvecEasyAssert (const size_t & tailleTab,
-                                    const unsigned & nbTab){
-    if (tailleTab > 26 || nbTab > 2){
-        cerr << "paramètres trops grands pour EASY_ASSERT" << endl;
-        return;
-    }
-    //pour chaque tableau
-    for (unsigned i (0); i < nbTab; ++i){
-        vector<int> tabInitial;
-        //on le génère
-        genererTab(tabInitial, tailleTab, 0, tabInitial.size() + 10);
-        //pour chaque indice du tableau
-        for (size_t j (0); j < tabInitial.size(); ++j){
-            //on crée 2 copies du tableau originel
-            vector<int> tabCourant1 (tabInitial), tabCourant2 (tabInitial);
-            //on l'appele avec la première copie pour inserer -1 dans la case courante
-            insererElem(tabCourant1, j, -1);
-            //on fait appel à la même fonction du C++ avec la seconde copie
-            tabCourant2.insert(tabCourant2.begin()+j, -1);
-            //on compare les resultats
-            EASY_ASSERT (tabCourant1 == tabCourant2);
+    else if (string(argv[2])=="maj"){
+        if (string (argv[3])=="tout"){
+            vFichier=ToUpper(vFichier);
+        }
+        else {
+            size_t numLigne = stoull (argv[3]);
+            vFichier[numLigne]=ToUpper(vFichier[numLigne]);
         }
     }
-}
 
-void protocoleDeplacerAvecEasyAssert (const size_t & tailleTab,
-                                     const unsigned & nbTab){
-    if (tailleTab > 26 || nbTab > 2){
-        cerr << "paramètres trops grands pour EASY_ASSERT" << endl;
-        return;
+    else if (string (argv[2])=="swa"){
+        vFichier=Swap(vFichier,stoul( argv[3]),stoul(argv[4]));
     }
-    //pour chaque tableau
-    for (unsigned i (0); i < nbTab; ++i){
-        vector<int> tabInitial;
-        //on le génère
-        genererTab(tabInitial, tailleTab, 0, tabInitial.size() + 10);
-        //pour chaque indice j du tableau
-        for (size_t j (0); j < tabInitial.size(); ++j){
-            //on crée 2 copies du tableau originel
-            vector<int> tabCourant1 (tabInitial), tabCourant2 (tabInitial);
-            //pour chaque autre indice k du tableau (k != j)
-            for (size_t k (0); k < tabInitial.size(); ++k){
-                if (k == j) continue;
-                //on appelle notre fonction pour deplacer l'element entre les positions j et k
-                deplacerElem(tabCourant1, j, k);
-                //on appelle notre fonction pour deplacer l'element entre les positions j et k,
-                //mais en utilisant les fonctions du C++
-                monDeplacerElem(tabCourant2, j, k);
-                EASY_ASSERT (tabCourant1 == tabCourant2);
-            }
-        }
-    }
-}
 
-void protocoleSupprimerAvecAssert (const size_t & tailleTab,
-                                      const unsigned & nbTab){
-    if (tailleTab < 1000 || nbTab < 10){
-        cerr << "paramètres trops petits pour assert" << endl;
-        return;
-    }
-    //pour chaque tableau
-    for (unsigned i (0); i < nbTab; ++i){
-        //on le génère
-        vector<int> tabInitial;
-        genererTab(tabInitial, tailleTab, 0, tabInitial.size() + 10);
-        //pour chaque indice du tableau
-        for (size_t j (0); j < tabInitial.size(); ++j){
-            //on crée 2 copies du tableau originel
-            vector<int> tabCourant1 (tabInitial), tabCourant2 (tabInitial);
-            //on l'appel avec la première copie pour supprimer la case courante
-            supprimerElem(tabCourant1, j);
-            //on fait appel à la même fonction du C++ avec la seconde copie
-            tabCourant2.erase(tabCourant2.begin()+j);
-            //on compare les resultats
-            assert (tabCourant1 == tabCourant2);
-        }
-    }
-    cout << "tous les tests finis !" << endl;
-}
 
-void protocoleInsererAvecAssert (const size_t & tailleTab,
-                                    const unsigned & nbTab){
-    if (tailleTab < 1000 || nbTab < 10){
-        cerr << "paramètres trops petits pour assert" << endl;
-        return;
+    else if (string (argv[2])=="del"){
+        vFichier=Delete(vFichier, stoul(argv[3]));
     }
-    //pour chaque tableau
-    for (unsigned i (0); i < nbTab; ++i){
-        vector<int> tabInitial;
-        //on le génère
-        genererTab(tabInitial, tailleTab, 0, tabInitial.size() + 10);
-        //pour chaque indice du tableau
-        for (size_t j (0); j < tabInitial.size(); ++j){
-            //on crée 2 copies du tableau originel
-            vector<int> tabCourant1 (tabInitial), tabCourant2 (tabInitial);
-            //on l'appele avec la première copie pour inserer -1 dans la case courante
-            insererElem(tabCourant1, j, -1);
-            //on fait appel à la même fonction du C++ avec la seconde copie
-            tabCourant2.insert(tabCourant2.begin()+j, -1);
-            //on compare les resultats
-            assert (tabCourant1 == tabCourant2);
-        }
-    }
-    cout << "tous les tests finis !" << endl;
-}
 
-void protocoleDeplacerAvecAssert (const size_t & tailleTab,
-                                     const unsigned & nbTab){
-    if (tailleTab < 1000 || nbTab < 10){
-        cerr << "paramètres trops petits pour assert" << endl;
-        return;
+    else if (string(argv[2])=="ins"){
+        vFichier=Insert(vFichier, stoul(argv[3]),string(argv[4]));
     }
-    //pour chaque tableau
-    for (unsigned i (0); i < nbTab; ++i){
-        vector<int> tabInitial;
-        //on le génère
-        genererTab(tabInitial, tailleTab, 0, tabInitial.size() + 10);
-        //pour chaque indice j du tableau
-        for (size_t j (0); j < tabInitial.size(); ++j){
-            //on crée 2 copies du tableau originel
-            vector<int> tabCourant1 (tabInitial), tabCourant2 (tabInitial);
-            //pour chaque autre indice k du tableau (k != j)
-            for (size_t k (0); k < tabInitial.size(); ++k){
-                if (k == j) continue;
-                //on appelle notre fonction pour deplacer l'element entre les positions j et k
-                deplacerElem(tabCourant1, j, k);
-                //on appelle notre fonction pour deplacer l'element entre les positions j et k,
-                //mais en utilisant les fonctions du C++
-                monDeplacerElem(tabCourant2, j, k);
-                assert (tabCourant1 == tabCourant2);
-            }
-        }
-    }
-    cout << "tous les tests finis !" << endl;
-}
 
-int main (){
-    //srand(time(nullptr));
-    vector<int> tab;
-    genererTab(tab, 10, 0, 20);
-    afficherTab(tab);
-    int val = supprimerElem (tab, 5);
-    afficherTab(tab);
-    insererElem(tab, 0, -1);
-    afficherTab(tab);
-    deplacerElem(tab, 0, 9);
-    afficherTab(tab);
+    else if (string(argv[2])=="mov"){
+        vFichier=Move(vFichier, stoul(argv[3]),stoul(argv[4]));
+    }
+
+    EditVStringV3(vFichier);
+    // cout << string(70,'-') << endl;
+    // AfficherTab(vFichier);
     return 0;
 }
-
-// int main(int argc, char**argv)
-// {
-//     if (3 != argc){
-//         cerr << "utilisation : " << argv[0] << '\n'
-//              << "1er argument : taille des tableaux \n"
-//              << "2nd argument : nombre de tableaux"
-//              <<endl;
-//         return 1;
-//     }
-//     size_t tailleTab (stoull (argv[1]));
-//     unsigned nbTab (stoul (argv[2]));
-//     //    protocoleSupprimerAvecEasyAssert (tailleTab, nbTab);
-//     //    protocoleInsererAvecEasyAssert (tailleTab, nbTab);
-//     //    protocoleDeplacerAvecEasyAssert (tailleTab, nbTab);
-//         protocoleSupprimerAvecAssert (tailleTab, nbTab);
-//     //    protocoleInsererAvecAssert (tailleTab, nbTab);
-//     //    protocoleDeplacerAvecAssert (tailleTab, nbTab);
-//     return 0;
-// }
