@@ -1,0 +1,66 @@
+//Ex1
+fonction estBienTrie (tab : in tableau_de entier) 
+renvoie booleen
+debut
+    pour (i variant_de 0 a taille(tab)-2)
+    faire
+        si (tab[i]>tab[i+1]) renvoie True;
+    ffaire
+    renvoie False;
+fin
+
+
+//Ex2
+procedure triSelection(tab : in_out tableau_de entier)
+debut
+    declarer min : entier;
+    pour (i variant_de 0 a taille(tab)-2)
+    faire
+        pour (j variant_de i+1 a taille(tab)-1)
+        faire
+            min <- i;
+            si(tab[j]<tab[min])
+                min<-j;
+            fsi
+        ffaire
+        si (min ne_vaut_pas i)
+            t[i]<-t[min];
+        fsi
+    ffaire
+fin
+
+
+//Ex3
+procedure triBulles(tab : in_out tableau_de entier)
+debut
+    declarer min : entier;
+    pour (i variant_de taille(tab)-1 a 0 descendant) 
+    faire
+        pour (j variant 0 a i-1)
+        faire
+            si (tab[j+1]<tab[j])
+                t[j+1]<-t[j]
+            fsi
+        ffaire
+    ffaire
+fin
+
+
+
+//Ex4
+procedure triInsertion(tab : in_out tableau_de entier)
+debut
+    pour (i variant_de 1 a taille(tab))
+    faire
+        declarer val : entier <- tab[i];
+        declarer j : entier <- i;
+        tant_que (j > 0 ET_ALORS tab[j-1] > val)
+        faire
+            tab[j]<-tab[j-1];
+            j<- j-1;
+        ffaire
+        tab[j]<-val;
+    ffaire
+fin
+
+
