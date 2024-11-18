@@ -1,0 +1,92 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+
+//Ex1
+void flux_cin() {
+    string line;
+
+    while (true) {
+        getline(cin, line);
+        cout << line << endl;
+        if (cin.eof()) break;
+    }
+}
+
+//Ex2
+void affichFich() {
+    ifstream ifs("LaFontaine.txt");
+
+    while (true) {
+        string ligne;
+        getline(ifs, ligne);
+        cout << ligne << endl;
+        if (ifs.eof()) break;
+    }
+}
+
+//Ex3
+void nomFichAuClavier() {
+    ifstream ifs;
+    ofstream ofs;
+    string nomFicEntree;
+    string nomFicSortie;
+    cin >> nomFicEntree;
+    cin >> nomFicSortie;
+    getline(cin, nomFicEntree);
+    getline(cin, nomFicSortie);
+    ifs.open(nomFicEntree);
+    ofs.open(nomFicSortie);
+
+    while (true) {
+        string line;
+        getline(ifs, line);
+        ofs << line << endl;
+        if (ifs.eof()) break;
+        
+    }
+}
+
+//Ex4
+void validFichier(){
+}
+
+
+//Ex5
+void get(){
+    string nomFicEntree;
+    ifstream ifs;
+
+    unsigned i (0);
+    for (;i<3;++i){
+        cout << "Saisir le nom du fichier à lire : " << endl;
+        getline(cin,nomFicEntree);
+        ifs.open(nomFicEntree);
+        if (ifs) break;
+    }
+    if (i==3){
+        cerr << "Trop de tentatives de lecture" << endl;
+        exit(-1);
+    }
+    //Pas bon : on ignore les caractères d'espacement -- propriete de l'extracteur >> du c++
+    // for (char c; ifs >> c;)
+    //      cout << c;
+    for (char c; ;){
+        c=ifs.get();
+        if (ifs.eof()) break;
+        cout << c;
+    }
+}
+
+
+
+
+
+
+int main() {
+    //flux_cin();
+    //affichFich();
+    nomFichAuClavier();
+    return 0;
+}
